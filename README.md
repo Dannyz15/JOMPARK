@@ -131,17 +131,17 @@ The JomPark app will start running on the selected device or emulator.
 
 ---
 
-## Teknologi
+## Technologies
 
-- **Flutter** — Framework pembangunan aplikasi merentas platform
-- **Dart** — Bahasa pengaturcaraan
-- **ValueNotifier** — Pengurusan state reaktif
-- **CustomPainter** — Lukisan peta 2D tersuai
+- **Flutter** — Cross-platform mobile application framework
+- **Dart** — Programming language
+- **ValueNotifier** — Reactive state management
+- **CustomPainter** — Custom 2D map rendering
 
 ---
 
-## Keperluan
+## Requirements
 
 - Flutter SDK ^3.11.1
 - Dart SDK ^3.11.1
-- Android / iOS device atau emulator
+- Android / iOS device or emulator
