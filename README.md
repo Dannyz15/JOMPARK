@@ -40,38 +40,38 @@ JomPark ialah aplikasi mudah alih tempat letak kereta yang direka untuk memudahk
 
 ---
 
-## Cara Jalankan Projek di VSCode
+## How to Run the Project in VSCode
 
-### 1. Pasang Perisian yang Diperlukan
+### 1. Install Required Software
 
-Pastikan semua perisian berikut telah dipasang sebelum memulakan:
+Make sure all the following software is installed before getting started:
 
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (versi 3.11.1 ke atas)
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (version 3.11.1 or above)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Git](https://git-scm.com/downloads)
-- Android Studio (untuk Android Emulator) **atau** telefon Android fizikal
+- Android Studio (for Android Emulator) **or** a physical Android device
 
-Selepas pasang Flutter, buka terminal dan jalankan:
+After installing Flutter, open a terminal and run:
 ```
 flutter doctor
 ```
-Pastikan semua item menunjukkan tanda ✓ sebelum teruskan.
+Make sure all items show a ✓ before proceeding.
 
 ---
 
-### 2. Pasang Extension Flutter dalam VSCode
+### 2. Install Flutter Extension in VSCode
 
-1. Buka VSCode
-2. Tekan `Ctrl + Shift + X` untuk buka Extensions
-3. Cari dan pasang:
-   - **Flutter** (oleh Dart Code)
-   - **Dart** (oleh Dart Code)
+1. Open VSCode
+2. Press `Ctrl + Shift + X` to open Extensions
+3. Search and install:
+   - **Flutter** (by Dart Code)
+   - **Dart** (by Dart Code)
 
 ---
 
-### 3. Clone Projek
+### 3. Clone the Project
 
-Buka terminal dalam VSCode (`Ctrl + `` `) dan jalankan:
+Open the terminal in VSCode (`Ctrl + `` `) and run:
 
 ```bash
 git clone https://github.com/Dannyz15/JOMPARK.git
@@ -82,7 +82,7 @@ cd JOMPARK
 
 ### 4. Install Dependencies
 
-Dalam terminal, jalankan:
+In the terminal, run:
 
 ```bash
 flutter pub get
@@ -90,44 +90,44 @@ flutter pub get
 
 ---
 
-### 5. Sambungkan Peranti atau Buka Emulator
+### 5. Connect a Device or Open an Emulator
 
-**Pilihan A — Telefon Android fizikal:**
-1. Aktifkan **Developer Options** pada telefon
-2. Hidupkan **USB Debugging**
-3. Sambungkan telefon ke komputer menggunakan kabel USB
-4. Benarkan kebenaran debug apabila diminta
+**Option A — Physical Android device:**
+1. Enable **Developer Options** on your phone
+2. Turn on **USB Debugging**
+3. Connect your phone to the computer via USB cable
+4. Allow the debug permission when prompted
 
-**Pilihan B — Android Emulator:**
-1. Buka Android Studio
-2. Pergi ke **Device Manager**
-3. Buat atau pilih emulator, kemudian klik **Play**
+**Option B — Android Emulator:**
+1. Open Android Studio
+2. Go to **Device Manager**
+3. Create or select an emulator, then click **Play**
 
-Semak peranti dikesan dengan jalankan:
+Verify your device is detected by running:
 ```bash
 flutter devices
 ```
 
 ---
 
-### 6. Jalankan Aplikasi
+### 6. Run the Application
 
-Dalam VSCode, tekan `F5` **atau** jalankan dalam terminal:
+In VSCode, press `F5` **or** run in the terminal:
 
 ```bash
 flutter run
 ```
 
-Aplikasi JomPark akan mula berjalan pada peranti atau emulator yang dipilih.
+The JomPark app will start running on the selected device or emulator.
 
 ---
 
-### Nota Tambahan
+### Additional Notes
 
-- Untuk tukar peranti semasa `flutter run` sedang berjalan, tekan `d` dalam terminal
-- Untuk hot reload (kemaskini UI tanpa restart), tekan `r`
-- Untuk hot restart (restart penuh), tekan `R`
-- Untuk hentikan aplikasi, tekan `q`
+- To switch devices while `flutter run` is running, press `d` in the terminal
+- For hot reload (update UI without restarting), press `r`
+- For hot restart (full restart), press `R`
+- To stop the application, press `q`
 
 ---
 
