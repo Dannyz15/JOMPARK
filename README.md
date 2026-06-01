@@ -49,7 +49,7 @@ Make sure all the following software is installed before getting started:
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) (version 3.11.1 or above)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Git](https://git-scm.com/downloads)
-- Android Studio (for Android Emulator) **or** a physical Android device
+- [Android Studio](https://developer.android.com/studio) (for Android Emulator) **or** a physical Android device
 
 After installing Flutter, open a terminal and run:
 ```
