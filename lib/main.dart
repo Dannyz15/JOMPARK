@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
 
   void _login() {
-    if (_usernameController.text == "admin" &&
+    if (_usernameController.text == "ahmad" &&
         _passwordController.text == "1234") {
       Navigator.pushReplacementNamed(context, '/home');
     } else {
