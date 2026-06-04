@@ -3,6 +3,7 @@ import 'package:jompark/home.dart';
 import 'package:jompark/tiket.dart';
 import 'package:jompark/sejarah.dart';
 import 'package:jompark/profile.dart';
+import 'package:jompark/notifikasi.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 
@@ -58,6 +59,15 @@ class _ColumnPageState extends State<ColumnPage> {
             onPressed: () => Scaffold.of(ctx).openDrawer(),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const NotifikasiPage()),
+            ),
+          ),
+        ],
       ),
       drawer: _AppDrawer(
         currentIndex: _currentIndex,

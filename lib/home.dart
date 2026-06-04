@@ -58,66 +58,6 @@ class _HomePageState extends State<HomePage> {
     return list;
   }
 
-  void _showNotifications() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF141B2D),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Notifikasi',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 14),
-            _NotifItem(
-              icon: Icons.access_time,
-              color: const Color(0xFFFBBF24),
-              title: 'Masa hampir tamat',
-              subtitle: 'Tempahan Kg. Baru Sentral P tamat dalam 15 minit.',
-              time: '5 min lepas',
-            ),
-            const SizedBox(height: 10),
-            _NotifItem(
-              icon: Icons.check_circle,
-              color: const Color(0xFF4ADE80),
-              title: 'Tempahan berjaya',
-              subtitle: 'Slot B1-08 di Kg. Baru Sentral P telah disahkan.',
-              time: '1 jam lepas',
-            ),
-            const SizedBox(height: 10),
-            _NotifItem(
-              icon: Icons.electric_car,
-              color: const Color(0xFFA78BFA),
-              title: 'Slot EV tersedia',
-              subtitle: 'Chow Kit Plaza EV kini ada 4 slot EV yang kosong.',
-              time: '3 jam lepas',
-            ),
-            const SizedBox(height: 10),
-            _NotifItem(
-              icon: Icons.local_offer,
-              color: const Color(0xFF60A5FA),
-              title: 'Promosi Jom Park',
-              subtitle: 'Parking percuma 1 jam di PWTC setiap hujung minggu!',
-              time: 'Semalam',
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _navigateTo(Map<String, dynamic> parking) {
     final activeTicket = AppState.instance.activeTicket.value;
     if (activeTicket != null) {
@@ -187,43 +127,22 @@ class _HomePageState extends State<HomePage> {
           // Location header
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Lokasi semasa',
-                      style: TextStyle(
-                        color: Color(0xFF9CA3AF),
-                        fontSize: 12,
-                      ),
-                    ),
-                    const Text(
-                      'Kampung Baru',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                const Text(
+                  'Lokasi semasa',
+                  style: TextStyle(
+                    color: Color(0xFF9CA3AF),
+                    fontSize: 12,
+                  ),
                 ),
-                GestureDetector(
-                  onTap: _showNotifications,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF141B2D),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.notifications_outlined,
-                      color: Colors.white,
-                      size: 20,
-                    ),
+                const Text(
+                  'Kampung Baru',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -894,71 +813,3 @@ class _ParkingCard extends StatelessWidget {
   }
 }
 
-// ── Notification item ─────────────────────────────────────────────────────────
-
-class _NotifItem extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String title;
-  final String subtitle;
-  final String time;
-
-  const _NotifItem({
-    required this.icon,
-    required this.color,
-    required this.title,
-    required this.subtitle,
-    required this.time,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: color, size: 18),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    time,
-                    style: const TextStyle(
-                      color: Color(0xFF6B7280),
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 12),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
