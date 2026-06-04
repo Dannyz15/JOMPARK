@@ -198,6 +198,7 @@ class _TiketPageState extends State<TiketPage> {
     final elapsed = DateTime.now().difference(ticket.startTime);
     final h = elapsed.inHours;
     final m = elapsed.inMinutes % 60;
+    final parkedLabel = h > 0 ? '${h}j ${m}m' : '${elapsed.inMinutes} minit';
     final charge = ticket.totalAmount + _totalExtendedAmount;
 
     showDialog(
@@ -214,7 +215,7 @@ class _TiketPageState extends State<TiketPage> {
             _InfoRow('Lokasi', ticket.name),
             _InfoRow('Slot', ticket.slot),
             _InfoRow('No. Plat', ticket.plate),
-            _InfoRow('Masa diparkir', '${h}j ${m}m'),
+            _InfoRow('Masa diparkir', parkedLabel),
             _InfoRow('Jumlah bayaran', 'RM ${charge.toStringAsFixed(2)}'),
           ],
         ),
