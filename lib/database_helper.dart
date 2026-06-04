@@ -15,7 +15,20 @@ class DatabaseHelper {
 
   Future<Database> _initDb() async {
     final path = join(await getDatabasesPath(), 'jompark.db');
-    return openDatabase(path, version: 1, onCreate: _onCreate);
+    return openDatabase(path, version: 2, onCreate: _onCreate, onUpgrade: _onUpgrade);
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS profile (
+          id INTEGER PRIMARY KEY,
+          name TEXT NOT NULL,
+          email TEXT NOT NULL
+        )
+      ''');
+      await db.insert('profile', {'id': 1, 'name': 'Ahmad Haziq', 'email': 'ahmad.haziq@email.com'});
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -27,6 +40,14 @@ class DatabaseHelper {
         color TEXT NOT NULL
       )
     ''');
+    await db.execute('''
+      CREATE TABLE profile (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL
+      )
+    ''');
+    await db.insert('profile', {'id': 1, 'name': 'Ahmad Haziq', 'email': 'ahmad.haziq@email.com'});
     await db.execute('''
       CREATE TABLE history (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -149,5 +170,20 @@ class DatabaseHelper {
   Future<void> updateHistoryDuration(int id, String duration) async {
     final db = await database;
     await db.update('history', {'duration': duration}, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<Map<String, String>> getProfile() async {
+    final db = await database;
+    final rows = await db.query('profile', where: 'id = ?', whereArgs: [1]);
+    if (rows.isEmpty) return {'name': 'Ahmad Haziq', 'email': 'ahmad.haziq@email.com'};
+    return {
+      'name': rows.first['name'] as String,
+      'email': rows.first['email'] as String,
+    };
+  }
+
+  Future<void> updateProfile(String name, String email) async {
+    final db = await database;
+    await db.update('profile', {'name': name, 'email': email}, where: 'id = ?', whereArgs: [1]);
   }
 }

@@ -60,6 +60,8 @@ class AppState {
 
   final activeTicket = ValueNotifier<ActiveTicket?>(null);
   final vehicles = ValueNotifier<List<Map<String, dynamic>>>([]);
+  final profileName = ValueNotifier<String>('Ahmad Haziq');
+  final profileEmail = ValueNotifier<String>('ahmad.haziq@email.com');
 
   final parkingList = ValueNotifier<List<Map<String, dynamic>>>([
     {
@@ -162,6 +164,15 @@ class AppState {
     vehicles.value = v;
     final h = await db.getHistory();
     history.value = h;
+    final p = await db.getProfile();
+    profileName.value = p['name']!;
+    profileEmail.value = p['email']!;
+  }
+
+  Future<void> updateProfile(String name, String email) async {
+    await DatabaseHelper.instance.updateProfile(name, email);
+    profileName.value = name;
+    profileEmail.value = email;
   }
 
   Future<void> addVehicle(Map<String, dynamic> vehicle) async {

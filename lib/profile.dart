@@ -9,9 +9,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String _name = 'Ahmad Haziq';
-  String _email = 'ahmad.haziq@email.com';
   int _mainVehicleIndex = 0;
+
+  String get _name => AppState.instance.profileName.value;
+  String get _email => AppState.instance.profileEmail.value;
 
   List<Map<String, dynamic>> get _vehicles => AppState.instance.vehicles.value;
 
@@ -47,20 +48,23 @@ class _ProfilePageState extends State<ProfilePage> {
             child: const Text('Batal', style: TextStyle(color: Color(0xFF9CA3AF))),
           ),
           ElevatedButton(
-            onPressed: () {
-              if (nameCtrl.text.trim().isNotEmpty) {
-                setState(() {
-                  _name = nameCtrl.text.trim();
-                  _email = emailCtrl.text.trim();
-                });
-              }
+            onPressed: () async {
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Profil berjaya dikemaskini'),
-                  backgroundColor: Color(0xFF059669),
-                ),
-              );
+              if (nameCtrl.text.trim().isNotEmpty) {
+                await AppState.instance.updateProfile(
+                  nameCtrl.text.trim(),
+                  emailCtrl.text.trim(),
+                );
+              }
+              if (mounted) {
+                setState(() {});
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Profil berjaya dikemaskini'),
+                    backgroundColor: Color(0xFF059669),
+                  ),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
