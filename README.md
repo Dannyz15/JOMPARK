@@ -7,24 +7,34 @@ JomPark ialah aplikasi mudah alih tempat letak kereta yang direka untuk memudahk
 ## Fungsi Utama
 
 ### Peta
-- Papar peta 2D kawasan Kampung Baru dengan lokasi semua tempat letak kereta berdekatan
-- Tunjukkan harga setiap lokasi terus pada peta
-- Tekan penanda untuk lihat butiran tempat letak kereta
+- Peta 2D kawasan Kampung Baru dengan tema gelap yang selari dengan reka bentuk app
+- Papar harga setiap lokasi parkir terus pada peta
+- Penanda status bagi setiap lokasi — **aktif**, **penuh**, dan **tersedia**
+- Tekan penanda untuk lihat butiran dan membuat tempahan
 
 ### Tiket
-- Papar tiket aktif selepas tempahan dibuat
+- Papar tiket aktif dengan maklumat lengkap tempahan
 - Kiraan masa nyata (countdown timer) untuk tempoh parkir
 - Lanjut masa parkir dengan pilihan tambahan masa yang fleksibel
+- Jumlah bayaran dikira secara automatik mengikut masa sebenar
 - Pengesahan sebelum lanjut masa bagi mengelakkan kesilapan
 
+### Notifikasi
+- Amaran apabila masa parkir hampir tamat (kurang 15 minit)
+- Pengesahan tempahan berjaya selepas slot berjaya ditempah
+- Makluman slot EV tersedia berdasarkan ketersediaan semasa
+- Boleh diakses melalui ikon loceng di AppBar
+
 ### Sejarah
-- Simpan rekod semua tempahan parkir lepas
-- Tapis sejarah mengikut jenis tempat letak kereta (semua, dalam bangunan, luar bangunan, EV)
-- Papar maklumat lengkap termasuk lokasi, slot, plat kenderaan, tempoh, dan jumlah bayaran
+- Rekod lengkap semua tempahan parkir yang pernah dibuat
+- Tapis rekod mengikut jenis tempat letak kereta (semua, dalam bangunan, luar bangunan, EV)
+- Papar maklumat terperinci — lokasi, slot, plat kenderaan, tempoh, dan jumlah bayaran
 
 ### Profil
-- Urus senarai kenderaan berdaftar
-- Tambah dan padam kenderaan dengan maklumat plat nombor, model, dan warna
+- Urus maklumat peribadi — nama penuh dan e-mel akaun
+- Senarai kenderaan berdaftar dengan maklumat plat nombor, model, dan warna
+- Tambah, edit, dan padam kenderaan
+- Tetapkan kenderaan utama untuk kegunaan harian
 
 ---
 
@@ -135,6 +145,8 @@ The JomPark app will start running on the selected device or emulator.
 
 - **Flutter** — Cross-platform mobile application framework
 - **Dart** — Programming language
+- **sqflite** — Local SQLite database for persistent storage
+- **package_info_plus** — Dynamic app version reading from `pubspec.yaml`
 - **ValueNotifier** — Reactive state management
 - **CustomPainter** — Custom 2D map rendering
 
