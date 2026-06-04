@@ -172,6 +172,11 @@ class DatabaseHelper {
     await db.update('history', {'duration': duration}, where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<void> updateHistoryAmount(int id, String amount, double rawAmount) async {
+    final db = await database;
+    await db.update('history', {'amount': amount, 'rawAmount': rawAmount}, where: 'id = ?', whereArgs: [id]);
+  }
+
   Future<Map<String, String>> getProfile() async {
     final db = await database;
     final rows = await db.query('profile', where: 'id = ?', whereArgs: [1]);

@@ -206,6 +206,23 @@ class AppState {
     history.value = [saved, ...history.value];
   }
 
+  Future<void> updateLastBookingAmount(double extraAmount) async {
+    if (history.value.isEmpty) return;
+    final first = history.value[0];
+    final newRaw = first.rawAmount + extraAmount;
+    final newAmount = 'RM ${newRaw.toStringAsFixed(2)}';
+    if (first.id != null) {
+      await DatabaseHelper.instance.updateHistoryAmount(first.id!, newAmount, newRaw);
+    }
+    final updated = HistoryEntry(
+      id: first.id, name: first.name, date: first.date, duration: first.duration,
+      slot: first.slot, amount: newAmount, rawAmount: newRaw,
+      icon: first.icon, iconColor: first.iconColor, iconBg: first.iconBg,
+      type: first.type, plate: first.plate,
+    );
+    history.value = [updated, ...history.value.sublist(1)];
+  }
+
   Future<void> updateLastBookingDuration(String duration) async {
     if (history.value.isEmpty) return;
     final first = history.value[0];

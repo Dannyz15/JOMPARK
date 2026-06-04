@@ -12,6 +12,7 @@ class TiketPage extends StatefulWidget {
 class _TiketPageState extends State<TiketPage> {
   int _remainingSeconds = 0;
   int _extraMinutes = 0;
+  double _totalExtendedAmount = 0;
   Timer? _timer;
 
   @override
@@ -41,6 +42,7 @@ class _TiketPageState extends State<TiketPage> {
     final ticket = AppState.instance.activeTicket.value;
     setState(() {
       _extraMinutes = 0;
+      _totalExtendedAmount = 0;
       _remainingSeconds = ticket?.totalSeconds ?? 0;
     });
     if (ticket != null) _startTimer();
@@ -101,19 +103,21 @@ class _TiketPageState extends State<TiketPage> {
               setState(() {
                 _remainingSeconds += addMinutes * 60;
                 _extraMinutes += addMinutes;
+                _totalExtendedAmount += amount;
               });
               _showExtendSuccess(addMinutes, amount);
               final ticket = AppState.instance.activeTicket.value;
               if (ticket != null) {
-                final totalMins = ticket.totalHours * 60 + _extraMinutes;
-                final h = totalMins ~/ 60;
-                final m = totalMins % 60;
-                final durStr = h > 0 && m > 0
-                    ? '$h jam $m minit'
-                    : h > 0
-                        ? '$h jam'
-                        : '$m minit';
-                await AppState.instance.updateLastBookingDuration(durStr);
+                final origStr = '${ticket.totalHours} jam';
+                final extH = _extraMinutes ~/ 60;
+                final extM = _extraMinutes % 60;
+                final extStr = extH > 0 && extM > 0
+                    ? '$extH jam $extM minit'
+                    : extH > 0
+                        ? '$extH jam'
+                        : '$extM minit';
+                await AppState.instance.updateLastBookingDuration('$origStr + $extStr');
+                await AppState.instance.updateLastBookingAmount(amount);
               }
             },
             style: ElevatedButton.styleFrom(
@@ -191,10 +195,10 @@ class _TiketPageState extends State<TiketPage> {
     final ticket = AppState.instance.activeTicket.value;
     if (ticket == null) return;
 
-    final parked = _totalWithExtra - _remainingSeconds;
-    final h = parked ~/ 3600;
-    final m = (parked % 3600) ~/ 60;
-    final charge = (parked / 3600 * ticket.pricePerHour).clamp(ticket.pricePerHour, 999.0);
+    final elapsed = DateTime.now().difference(ticket.startTime);
+    final h = elapsed.inHours;
+    final m = elapsed.inMinutes % 60;
+    final charge = ticket.totalAmount + _totalExtendedAmount;
 
     showDialog(
       context: context,
