@@ -116,7 +116,7 @@ class _ParkingDetailPageState extends State<ParkingDetailPage> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () async {
-                AppState.instance.activeTicket.value = ActiveTicket(
+                await AppState.instance.saveActiveTicket(ActiveTicket(
                   name: widget.name,
                   slot: _slotName(_selectedSlot!),
                   plate: _plateController.text.trim().toUpperCase(),
@@ -124,7 +124,7 @@ class _ParkingDetailPageState extends State<ParkingDetailPage> {
                   pricePerHour: widget.pricePerHour,
                   totalAmount: _total,
                   startTime: DateTime.now(),
-                );
+                ));
                 AppState.instance.bookParking(widget.name);
                 await AppState.instance.addBooking(HistoryEntry(
                   name: widget.name,

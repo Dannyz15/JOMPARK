@@ -27,7 +27,8 @@ class HistoryEntry {
 class ActiveTicket {
   final String name, slot, plate;
   final int totalHours;
-  final double pricePerHour, totalAmount;
+  final int extraMinutes;
+  final double pricePerHour, totalAmount, extendedAmount;
   final DateTime startTime;
 
   ActiveTicket({
@@ -38,9 +39,17 @@ class ActiveTicket {
     required this.pricePerHour,
     required this.totalAmount,
     required this.startTime,
+    this.extraMinutes = 0,
+    this.extendedAmount = 0,
   });
 
   int get totalSeconds => totalHours * 3600;
+  int get totalBookedSeconds => totalSeconds + extraMinutes * 60;
+
+  int get remainingSeconds {
+    final elapsed = DateTime.now().difference(startTime).inSeconds;
+    return (totalBookedSeconds - elapsed).clamp(0, totalBookedSeconds);
+  }
 
   String get startTimeLabel {
     final h = startTime.hour.toString().padLeft(2, '0');
@@ -49,7 +58,7 @@ class ActiveTicket {
   }
 
   String endTimeLabel(int extraSeconds) {
-    final end = startTime.add(Duration(seconds: totalSeconds + extraSeconds));
+    final end = startTime.add(Duration(seconds: totalBookedSeconds + extraSeconds));
     return '${end.hour.toString().padLeft(2, '0')}:${end.minute.toString().padLeft(2, '0')}';
   }
 }
@@ -167,6 +176,35 @@ class AppState {
     final p = await db.getProfile();
     profileName.value = p['name']!;
     profileEmail.value = p['email']!;
+    final t = await db.getActiveTicket();
+    if (t != null && t.remainingSeconds > 0) {
+      activeTicket.value = t;
+    } else if (t != null) {
+      await db.clearActiveTicket();
+    }
+  }
+
+  Future<void> saveActiveTicket(ActiveTicket ticket) async {
+    await DatabaseHelper.instance.saveActiveTicket(ticket);
+    activeTicket.value = ticket;
+  }
+
+  Future<void> extendActiveTicket(int extraMinutes, double extendedAmount) async {
+    final ticket = activeTicket.value;
+    if (ticket == null) return;
+    final updated = ActiveTicket(
+      name: ticket.name, slot: ticket.slot, plate: ticket.plate,
+      totalHours: ticket.totalHours, pricePerHour: ticket.pricePerHour,
+      totalAmount: ticket.totalAmount, startTime: ticket.startTime,
+      extraMinutes: extraMinutes, extendedAmount: extendedAmount,
+    );
+    await DatabaseHelper.instance.updateActiveTicketExtension(extraMinutes, extendedAmount);
+    activeTicket.value = updated;
+  }
+
+  Future<void> clearActiveTicket() async {
+    await DatabaseHelper.instance.clearActiveTicket();
+    activeTicket.value = null;
   }
 
   Future<void> updateProfile(String name, String email) async {

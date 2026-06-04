@@ -15,7 +15,7 @@ class DatabaseHelper {
 
   Future<Database> _initDb() async {
     final path = join(await getDatabasesPath(), 'jompark.db');
-    return openDatabase(path, version: 2, onCreate: _onCreate, onUpgrade: _onUpgrade);
+    return openDatabase(path, version: 3, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -28,6 +28,22 @@ class DatabaseHelper {
         )
       ''');
       await db.insert('profile', {'id': 1, 'name': 'Ahmad Haziq', 'email': 'ahmad.haziq@email.com'});
+    }
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS active_ticket (
+          id INTEGER PRIMARY KEY,
+          name TEXT NOT NULL,
+          slot TEXT NOT NULL,
+          plate TEXT NOT NULL,
+          totalHours INTEGER NOT NULL,
+          extraMinutes INTEGER NOT NULL DEFAULT 0,
+          pricePerHour REAL NOT NULL,
+          totalAmount REAL NOT NULL,
+          extendedAmount REAL NOT NULL DEFAULT 0,
+          startTime TEXT NOT NULL
+        )
+      ''');
     }
   }
 
@@ -48,6 +64,20 @@ class DatabaseHelper {
       )
     ''');
     await db.insert('profile', {'id': 1, 'name': 'Ahmad Haziq', 'email': 'ahmad.haziq@email.com'});
+    await db.execute('''
+      CREATE TABLE active_ticket (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        slot TEXT NOT NULL,
+        plate TEXT NOT NULL,
+        totalHours INTEGER NOT NULL,
+        extraMinutes INTEGER NOT NULL DEFAULT 0,
+        pricePerHour REAL NOT NULL,
+        totalAmount REAL NOT NULL,
+        extendedAmount REAL NOT NULL DEFAULT 0,
+        startTime TEXT NOT NULL
+      )
+    ''');
     await db.execute('''
       CREATE TABLE history (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -175,6 +205,54 @@ class DatabaseHelper {
   Future<void> updateHistoryAmount(int id, String amount, double rawAmount) async {
     final db = await database;
     await db.update('history', {'amount': amount, 'rawAmount': rawAmount}, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> saveActiveTicket(ActiveTicket ticket) async {
+    final db = await database;
+    await db.delete('active_ticket');
+    await db.insert('active_ticket', {
+      'id': 1,
+      'name': ticket.name,
+      'slot': ticket.slot,
+      'plate': ticket.plate,
+      'totalHours': ticket.totalHours,
+      'extraMinutes': ticket.extraMinutes,
+      'pricePerHour': ticket.pricePerHour,
+      'totalAmount': ticket.totalAmount,
+      'extendedAmount': ticket.extendedAmount,
+      'startTime': ticket.startTime.toIso8601String(),
+    });
+  }
+
+  Future<void> updateActiveTicketExtension(int extraMinutes, double extendedAmount) async {
+    final db = await database;
+    await db.update('active_ticket', {
+      'extraMinutes': extraMinutes,
+      'extendedAmount': extendedAmount,
+    }, where: 'id = ?', whereArgs: [1]);
+  }
+
+  Future<void> clearActiveTicket() async {
+    final db = await database;
+    await db.delete('active_ticket');
+  }
+
+  Future<ActiveTicket?> getActiveTicket() async {
+    final db = await database;
+    final rows = await db.query('active_ticket', where: 'id = ?', whereArgs: [1]);
+    if (rows.isEmpty) return null;
+    final r = rows.first;
+    return ActiveTicket(
+      name: r['name'] as String,
+      slot: r['slot'] as String,
+      plate: r['plate'] as String,
+      totalHours: r['totalHours'] as int,
+      extraMinutes: r['extraMinutes'] as int,
+      pricePerHour: r['pricePerHour'] as double,
+      totalAmount: r['totalAmount'] as double,
+      extendedAmount: r['extendedAmount'] as double,
+      startTime: DateTime.parse(r['startTime'] as String),
+    );
   }
 
   Future<Map<String, String>> getProfile() async {

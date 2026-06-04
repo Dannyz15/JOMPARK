@@ -32,7 +32,9 @@ class _TiketPageState extends State<TiketPage> {
   void _initFromTicket() {
     final ticket = AppState.instance.activeTicket.value;
     if (ticket != null) {
-      _remainingSeconds = ticket.totalSeconds;
+      _extraMinutes = ticket.extraMinutes;
+      _totalExtendedAmount = ticket.extendedAmount;
+      _remainingSeconds = ticket.remainingSeconds;
       _startTimer();
     }
   }
@@ -41,9 +43,9 @@ class _TiketPageState extends State<TiketPage> {
     _timer?.cancel();
     final ticket = AppState.instance.activeTicket.value;
     setState(() {
-      _extraMinutes = 0;
-      _totalExtendedAmount = 0;
-      _remainingSeconds = ticket?.totalSeconds ?? 0;
+      _extraMinutes = ticket?.extraMinutes ?? 0;
+      _totalExtendedAmount = ticket?.extendedAmount ?? 0;
+      _remainingSeconds = ticket?.remainingSeconds ?? 0;
     });
     if (ticket != null) _startTimer();
   }
@@ -68,7 +70,7 @@ class _TiketPageState extends State<TiketPage> {
 
   int get _totalWithExtra {
     final ticket = AppState.instance.activeTicket.value;
-    return (ticket?.totalSeconds ?? 0) + _extraMinutes * 60;
+    return ticket?.totalBookedSeconds ?? 0;
   }
 
   double get _progress =>
@@ -118,6 +120,7 @@ class _TiketPageState extends State<TiketPage> {
                         : '$extM minit';
                 await AppState.instance.updateLastBookingDuration('$origStr + $extStr');
                 await AppState.instance.updateLastBookingAmount(amount);
+                await AppState.instance.extendActiveTicket(_extraMinutes, _totalExtendedAmount);
               }
             },
             style: ElevatedButton.styleFrom(
@@ -243,7 +246,7 @@ class _TiketPageState extends State<TiketPage> {
   void _showReceiptDialog(double amount, String parkingName) {
     _timer?.cancel();
     AppState.instance.releaseParking(parkingName);
-    AppState.instance.activeTicket.value = null;
+    AppState.instance.clearActiveTicket();
 
     showDialog(
       context: context,
