@@ -331,75 +331,139 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: SizedBox(
-                height: 220,
+              child: Container(
+                height: 240,
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFF2D3A52), width: 1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Stack(
                   children: [
                     CustomPaint(
-                      size: const Size(double.infinity, 220),
+                      size: const Size(double.infinity, 240),
                       painter: _MapPainter(),
+                    ),
+                    // Compass
+                    Positioned(
+                      right: 10,
+                      bottom: 10,
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E2A3E).withValues(alpha: 0.85),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: const Color(0xFF2D3A52)),
+                        ),
+                        child: const Icon(Icons.navigation, color: Color(0xFF60A5FA), size: 14),
+                      ),
                     ),
                     // Current location dot
                     Positioned(
-                      left: 100,
-                      top: 108,
-                      child: Container(
-                        width: 13,
-                        height: 13,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1D4ED8),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2.5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF1D4ED8).withValues(alpha: 0.5),
-                              blurRadius: 6,
-                              spreadRadius: 1,
+                      left: 108,
+                      top: 118,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 26,
+                            height: 26,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2563EB).withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
                             ),
-                          ],
+                          ),
+                          Container(
+                            width: 13,
+                            height: 13,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2563EB),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2.5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF2563EB).withValues(alpha: 0.6),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Parking markers
+                    Builder(builder: (context) {
+                      final active = AppState.instance.activeTicket.value;
+                      final pl = AppState.instance.parkingList.value;
+                      return Stack(children: [
+                        Positioned(
+                          left: 58,
+                          top: 72,
+                          child: GestureDetector(
+                            onTap: () => _navigateTo(pl[0]),
+                            child: _MapMarker(
+                              label: 'RM2/jam',
+                              color: const Color(0xFF1D4ED8),
+                              isMyParking: active?.name == pl[0]['name'],
+                              isFull: (pl[0]['availableSlots'] as int) == 0,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 58,
-                      top: 68,
-                      child: GestureDetector(
-                        onTap: () => _navigateTo(AppState.instance.parkingList.value[0]),
-                        child: const _MapMarker(label: 'RM2/jam', color: Color(0xFF1D4ED8)),
-                      ),
-                    ),
-                    Positioned(
-                      left: 14,
-                      top: 14,
-                      child: GestureDetector(
-                        onTap: () => _navigateTo(AppState.instance.parkingList.value[1]),
-                        child: const _MapMarker(label: 'RM1.5/jam', color: Color(0xFF166534)),
-                      ),
-                    ),
-                    Positioned(
-                      right: 18,
-                      top: 10,
-                      child: GestureDetector(
-                        onTap: () => _navigateTo(AppState.instance.parkingList.value[2]),
-                        child: const _MapMarker(label: 'RM3/jam', color: Color(0xFF92400E)),
-                      ),
-                    ),
-                    Positioned(
-                      left: 140,
-                      top: 116,
-                      child: GestureDetector(
-                        onTap: () => _navigateTo(AppState.instance.parkingList.value[3]),
-                        child: const _MapMarker(label: 'RM2.5/jam', color: Color(0xFF6D28D9)),
-                      ),
-                    ),
-                    Positioned(
-                      right: 22,
-                      top: 130,
-                      child: GestureDetector(
-                        onTap: () => _navigateTo(AppState.instance.parkingList.value[4]),
-                        child: const _MapMarker(label: 'RM1/jam', color: Color(0xFF065F46)),
-                      ),
-                    ),
+                        Positioned(
+                          left: 10,
+                          top: 12,
+                          child: GestureDetector(
+                            onTap: () => _navigateTo(pl[1]),
+                            child: _MapMarker(
+                              label: 'RM1.5/jam',
+                              color: const Color(0xFF166534),
+                              isMyParking: active?.name == pl[1]['name'],
+                              isFull: (pl[1]['availableSlots'] as int) == 0,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 14,
+                          top: 8,
+                          child: GestureDetector(
+                            onTap: () => _navigateTo(pl[2]),
+                            child: _MapMarker(
+                              label: 'RM3/jam',
+                              color: const Color(0xFF92400E),
+                              isMyParking: active?.name == pl[2]['name'],
+                              isFull: (pl[2]['availableSlots'] as int) == 0,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 148,
+                          top: 124,
+                          child: GestureDetector(
+                            onTap: () => _navigateTo(pl[3]),
+                            child: _MapMarker(
+                              label: 'RM2.5/jam',
+                              color: const Color(0xFF5B21B6),
+                              isMyParking: active?.name == pl[3]['name'],
+                              isFull: (pl[3]['availableSlots'] as int) == 0,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 18,
+                          top: 140,
+                          child: GestureDetector(
+                            onTap: () => _navigateTo(pl[4]),
+                            child: _MapMarker(
+                              label: 'RM1/jam',
+                              color: const Color(0xFF065F46),
+                              isMyParking: active?.name == pl[4]['name'],
+                              isFull: (pl[4]['availableSlots'] as int) == 0,
+                            ),
+                          ),
+                        ),
+                      ]);
+                    }),
                   ],
                 ),
               ),
@@ -489,15 +553,19 @@ class _HomePageState extends State<HomePage> {
 // ── Map widgets ──────────────────────────────────────────────────────────────
 
 class _MapPainter extends CustomPainter {
-  void _label(Canvas canvas, String text, double x, double y,
-      {double size = 8.5, bool bold = false, Color color = const Color(0xFF888070)}) {
+  void _label(Canvas canvas, String text, double x, double y, {
+    double size = 8.0,
+    bool bold = false,
+    Color color = const Color(0xFF4A5E78),
+  }) {
     final tp = TextPainter(
       text: TextSpan(
         text: text,
         style: TextStyle(
           color: color,
           fontSize: size,
-          fontWeight: bold ? FontWeight.bold : FontWeight.w500,
+          fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
+          letterSpacing: bold ? 1.2 : 0,
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -510,51 +578,96 @@ class _MapPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    // Background
-    canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = const Color(0xFFE5DDD0));
+    // Background – dark navy
+    canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = const Color(0xFF1E2A3E));
 
-    // Sungai Klang – river strip left
-    canvas.drawRect(Rect.fromLTWH(0, 0, 26, h), Paint()..color = const Color(0xFF72C2E0));
+    // Sungai Klang – curved river left
+    final riverPath = Path()
+      ..moveTo(0, 0)
+      ..cubicTo(40, h * 0.22, 16, h * 0.52, 26, h * 0.82)
+      ..cubicTo(30, h * 0.92, 26, h * 0.97, 22, h)
+      ..lineTo(0, h)
+      ..close();
+    canvas.drawPath(riverPath, Paint()..color = const Color(0xFF1A4A6A));
+
+    final riverShine = Path()
+      ..moveTo(8, 0)
+      ..cubicTo(26, h * 0.2, 10, h * 0.48, 18, h * 0.78)
+      ..cubicTo(20, h * 0.88, 16, h * 0.94, 14, h)
+      ..lineTo(8, h)
+      ..cubicTo(14, h * 0.88, 22, h * 0.6, 10, h * 0.36)
+      ..cubicTo(20, h * 0.16, 30, h * 0.1, 10, 0)
+      ..close();
+    canvas.drawPath(riverShine,
+        Paint()..color = const Color(0xFF1E5A80).withValues(alpha: 0.4));
 
     // Padang / park – top right
     canvas.drawRRect(
-      RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.68, 0, w * 0.32, h * 0.44), const Radius.circular(4)),
-      Paint()..color = const Color(0xFF8FCC90),
+      RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.67, 0, w * 0.33, h * 0.43), const Radius.circular(3)),
+      Paint()..color = const Color(0xFF1A3828),
     );
+    final treePaint = Paint()..color = const Color(0xFF213E2E);
+    for (double tx = w * 0.695; tx < w * 0.99; tx += w * 0.065) {
+      for (double ty = h * 0.05; ty < h * 0.38; ty += h * 0.1) {
+        canvas.drawCircle(Offset(tx, ty), w * 0.02, treePaint);
+      }
+    }
 
     // Roads
-    final main = Paint()..color = const Color(0xFFFAF8F4);
-    final side = Paint()..color = const Color(0xFFEEEBE4);
+    final mainRoad = Paint()..color = const Color(0xFF2C3C56);
+    final sideRoad = Paint()..color = const Color(0xFF243048);
 
-    // Horizontal
-    canvas.drawRect(Rect.fromLTWH(26, h * 0.52, w - 26, 17), main);  // Jln Raja Muda
-    canvas.drawRect(Rect.fromLTWH(26, h * 0.27, w - 26, 11), side);  // Jln Raja Bot
-    canvas.drawRect(Rect.fromLTWH(26, h * 0.77, w - 26, 10), side);  // Lower road
+    // Horizontal roads
+    canvas.drawRect(Rect.fromLTWH(32, h * 0.50, w - 32, 20), mainRoad); // Jln Raja Muda
+    canvas.drawRect(Rect.fromLTWH(32, h * 0.26, w - 32, 12), sideRoad); // Jln Raja Bot
+    canvas.drawRect(Rect.fromLTWH(32, h * 0.76, w - 32, 10), sideRoad); // Lower road
 
-    // Vertical
-    canvas.drawRect(Rect.fromLTWH(w * 0.30, 0, 15, h), main);   // Jln Raja Abdullah
-    canvas.drawRect(Rect.fromLTWH(w * 0.65, 0, 10, h), side);   // Jln TAR
+    // Vertical roads
+    canvas.drawRect(Rect.fromLTWH(w * 0.29, 0, 18, h), mainRoad);  // Jln Raja Abdullah
+    canvas.drawRect(Rect.fromLTWH(w * 0.64, 0, 12, h), sideRoad);  // Jln TAR
 
-    // Building blocks
-    final blk = Paint()..color = const Color(0xFFC0B8AA);
+    // Road centre dashes – main horizontal
+    final dash = Paint()..color = const Color(0xFF3A4E6A)..strokeWidth = 1.0;
+    for (double x = 36; x < w - 6; x += 14) {
+      canvas.drawLine(Offset(x, h * 0.50 + 10), Offset(x + 7, h * 0.50 + 10), dash);
+    }
+
+    // Buildings
+    final buildFill = Paint()..color = const Color(0xFF263242);
+    final buildBorder = Paint()
+      ..color = const Color(0xFF2E3D52)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+
     for (final r in [
-      Rect.fromLTWH(30, h * 0.34, 68, 46),
-      Rect.fromLTWH(w * 0.30 + 20, h * 0.34, 72, 46),
-      Rect.fromLTWH(30, h * 0.61, 66, 40),
-      Rect.fromLTWH(w * 0.30 + 20, h * 0.61, 68, 40),
-      Rect.fromLTWH(w * 0.65 + 14, h * 0.61, 52, 40),
-      Rect.fromLTWH(w * 0.65 + 14, h * 0.10, 52, 38),
+      Rect.fromLTWH(36, h * 0.07, 50, h * 0.15),
+      Rect.fromLTWH(92, h * 0.07, 32, h * 0.15),
+      Rect.fromLTWH(36, h * 0.33, 56, h * 0.14),
+      Rect.fromLTWH(98, h * 0.33, 32, h * 0.14),
+      Rect.fromLTWH(36, h * 0.59, 54, h * 0.14),
+      Rect.fromLTWH(36, h * 0.79, 54, h * 0.14),
+      Rect.fromLTWH(w * 0.29 + 22, h * 0.05, 52, h * 0.17),
+      Rect.fromLTWH(w * 0.29 + 80, h * 0.05, 28, h * 0.17),
+      Rect.fromLTWH(w * 0.29 + 22, h * 0.33, 54, h * 0.14),
+      Rect.fromLTWH(w * 0.29 + 82, h * 0.33, 28, h * 0.14),
+      Rect.fromLTWH(w * 0.29 + 22, h * 0.59, 52, h * 0.14),
+      Rect.fromLTWH(w * 0.29 + 22, h * 0.79, 52, h * 0.14),
+      Rect.fromLTWH(w * 0.64 + 16, h * 0.50, 42, h * 0.22),
+      Rect.fromLTWH(w * 0.64 + 16, h * 0.79, 42, h * 0.14),
     ]) {
-      canvas.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(3)), blk);
+      final rr = RRect.fromRectAndRadius(r, const Radius.circular(3));
+      canvas.drawRRect(rr, buildFill);
+      canvas.drawRRect(rr, buildBorder);
     }
 
     // Labels
-    _label(canvas, 'Jln Raja Muda Abdul Aziz', 30, h * 0.53);
-    _label(canvas, 'Jln Raja Bot', 30, h * 0.28);
-    _label(canvas, 'Jln Raja Abdullah', w * 0.30 + 17, 4, size: 7.5);
-    _label(canvas, 'Padang', w * 0.74, h * 0.14, size: 8.0, color: const Color(0xFF4A7A4A));
-    _label(canvas, 'KAMPUNG BARU', w * 0.33, h * 0.17,
-        size: 11, bold: true, color: const Color(0xFF6A6055));
+    _label(canvas, 'Jln Raja Muda Abdul Aziz', 38, h * 0.515, size: 7.0);
+    _label(canvas, 'Jln Raja Bot', 38, h * 0.268, size: 6.5);
+    _label(canvas, 'Jln Raja Abdullah', w * 0.295, 4, size: 6.0);
+    _label(canvas, 'Padang', w * 0.76, h * 0.17, size: 8.0, color: const Color(0xFF3A6E48));
+    _label(canvas, 'KAMPUNG BARU', w * 0.34, h * 0.15,
+        size: 10, bold: true, color: const Color(0xFF4A5E78));
+    _label(canvas, 'Sg. Klang', 1, h * 0.46, size: 6.0, color: const Color(0xFF2A6A94));
   }
 
   @override
@@ -564,31 +677,51 @@ class _MapPainter extends CustomPainter {
 class _MapMarker extends StatelessWidget {
   final String label;
   final Color color;
+  final bool isMyParking;
+  final bool isFull;
 
-  const _MapMarker({required this.label, required this.color});
+  const _MapMarker({
+    required this.label,
+    required this.color,
+    this.isMyParking = false,
+    this.isFull = false,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final bg = isMyParking
+        ? const Color(0xFF1D4ED8)
+        : isFull
+            ? const Color(0xFF7F1D1D)
+            : color;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
           decoration: BoxDecoration(
-            color: color,
+            color: bg,
             borderRadius: BorderRadius.circular(20),
+            border: isMyParking
+                ? Border.all(color: const Color(0xFF93C5FD), width: 1.5)
+                : null,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+                color: Colors.black.withValues(alpha: 0.4),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.local_parking, color: Colors.white, size: 11),
+              Icon(
+                isMyParking ? Icons.directions_car : Icons.local_parking,
+                color: Colors.white,
+                size: 11,
+              ),
               const SizedBox(width: 3),
               Text(
                 label,
@@ -603,7 +736,7 @@ class _MapMarker extends StatelessWidget {
         ),
         CustomPaint(
           size: const Size(10, 6),
-          painter: _TailPainter(color: color),
+          painter: _TailPainter(color: bg),
         ),
       ],
     );
