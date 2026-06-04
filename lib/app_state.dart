@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'database_helper.dart';
 
 class HistoryEntry {
+  final int? id;
   final String name, date, duration, slot, amount, type, plate;
   final double rawAmount;
   final IconData icon;
   final Color iconColor, iconBg;
 
   const HistoryEntry({
+    this.id,
     required this.name,
     required this.date,
     required this.duration,
@@ -56,12 +59,7 @@ class AppState {
   static final AppState instance = AppState._();
 
   final activeTicket = ValueNotifier<ActiveTicket?>(null);
-
-  final vehicles = ValueNotifier<List<Map<String, dynamic>>>([
-    {'plate': 'PETRA 2002', 'model': 'Porsche 911 GT3 RS', 'color': 'Putih'},
-    {'plate': 'FAEDIY 1115', 'model': 'Mitsubishi Evo 10', 'color': 'Hitam'},
-    {'plate': 'BOBBY 04', 'model': 'Lamborghini Aventador', 'color': 'Hitam'},
-  ]);
+  final vehicles = ValueNotifier<List<Map<String, dynamic>>>([]);
 
   final parkingList = ValueNotifier<List<Map<String, dynamic>>>([
     {
@@ -156,93 +154,58 @@ class AppState {
     parkingList.value = list;
   }
 
-  final history = ValueNotifier<List<HistoryEntry>>(const [
-    HistoryEntry(
-      name: 'Kg. Baru Sentral P',
-      date: '5 Nov 2024',
-      duration: '2 jam',
-      slot: 'B1-08',
-      amount: 'RM 4.00',
-      rawAmount: 4.00,
-      icon: Icons.business,
-      iconColor: Color(0xFF60A5FA),
-      iconBg: Color(0xFF1E3A5F),
-      type: 'Dalam bangunan',
-      plate: 'PETRA 2002',
-    ),
-    HistoryEntry(
-      name: 'Masjid KBaru Open Air',
-      date: '3 Nov 2024',
-      duration: '2 jam',
-      slot: 'A-07',
-      amount: 'RM 3.00',
-      rawAmount: 3.00,
-      icon: Icons.local_parking,
-      iconColor: Color(0xFF4ADE80),
-      iconBg: Color(0xFF1A3A2E),
-      type: 'Luar bangunan',
-      plate: 'BOBBY 04',
-    ),
-    HistoryEntry(
-      name: 'DBP Parking',
-      date: '1 Nov 2024',
-      duration: '3 jam',
-      slot: 'P1-14',
-      amount: 'RM 7.50',
-      rawAmount: 7.50,
-      icon: Icons.local_library,
-      iconColor: Color(0xFFA78BFA),
-      iconBg: Color(0xFF2E1A3A),
-      type: 'Dalam bangunan',
-      plate: 'FAEDIY 1115',
-    ),
-    HistoryEntry(
-      name: 'Chow Kit Plaza EV',
-      date: '28 Okt 2024',
-      duration: '1 jam',
-      slot: 'EV-02',
-      amount: 'RM 3.00',
-      rawAmount: 3.00,
-      icon: Icons.electric_car,
-      iconColor: Color(0xFFFBBF24),
-      iconBg: Color(0xFF3A2E1A),
-      type: 'EV Charging',
-      plate: 'PETRA 2002',
-    ),
-    HistoryEntry(
-      name: 'PWTC Parking',
-      date: '25 Okt 2024',
-      duration: '4 jam',
-      slot: 'L2-33',
-      amount: 'RM 4.00',
-      rawAmount: 4.00,
-      icon: Icons.local_parking,
-      iconColor: Color(0xFF34D399),
-      iconBg: Color(0xFF1A3A2E),
-      type: 'Luar bangunan',
-      plate: 'BOBBY 04',
-    ),
-  ]);
+  final history = ValueNotifier<List<HistoryEntry>>([]);
 
-  void addBooking(HistoryEntry entry) {
-    history.value = [entry, ...history.value];
+  Future<void> init() async {
+    final db = DatabaseHelper.instance;
+    final v = await db.getVehicles();
+    vehicles.value = v;
+    final h = await db.getHistory();
+    history.value = h;
   }
 
-  void updateLastBookingDuration(String duration) {
+  Future<void> addVehicle(Map<String, dynamic> vehicle) async {
+    final id = await DatabaseHelper.instance.insertVehicle(vehicle);
+    vehicles.value = [...vehicles.value, {...vehicle, 'id': id}];
+  }
+
+  Future<void> updateVehicle(int index, Map<String, dynamic> vehicle) async {
+    final id = vehicles.value[index]['id'] as int;
+    await DatabaseHelper.instance.updateVehicle(id, vehicle);
+    final list = [...vehicles.value];
+    list[index] = {...vehicle, 'id': id};
+    vehicles.value = list;
+  }
+
+  Future<void> removeVehicle(int index) async {
+    final id = vehicles.value[index]['id'] as int;
+    await DatabaseHelper.instance.deleteVehicle(id);
+    final list = [...vehicles.value]..removeAt(index);
+    vehicles.value = list;
+  }
+
+  Future<void> addBooking(HistoryEntry entry) async {
+    final id = await DatabaseHelper.instance.insertHistory(entry);
+    final saved = HistoryEntry(
+      id: id, name: entry.name, date: entry.date, duration: entry.duration,
+      slot: entry.slot, amount: entry.amount, rawAmount: entry.rawAmount,
+      icon: entry.icon, iconColor: entry.iconColor, iconBg: entry.iconBg,
+      type: entry.type, plate: entry.plate,
+    );
+    history.value = [saved, ...history.value];
+  }
+
+  Future<void> updateLastBookingDuration(String duration) async {
     if (history.value.isEmpty) return;
     final first = history.value[0];
+    if (first.id != null) {
+      await DatabaseHelper.instance.updateHistoryDuration(first.id!, duration);
+    }
     final updated = HistoryEntry(
-      name: first.name,
-      date: first.date,
-      duration: duration,
-      slot: first.slot,
-      amount: first.amount,
-      rawAmount: first.rawAmount,
-      icon: first.icon,
-      iconColor: first.iconColor,
-      iconBg: first.iconBg,
-      type: first.type,
-      plate: first.plate,
+      id: first.id, name: first.name, date: first.date, duration: duration,
+      slot: first.slot, amount: first.amount, rawAmount: first.rawAmount,
+      icon: first.icon, iconColor: first.iconColor, iconBg: first.iconBg,
+      type: first.type, plate: first.plate,
     );
     history.value = [updated, ...history.value.sublist(1)];
   }

@@ -115,7 +115,7 @@ class _ParkingDetailPageState extends State<ParkingDetailPage> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 AppState.instance.activeTicket.value = ActiveTicket(
                   name: widget.name,
                   slot: _slotName(_selectedSlot!),
@@ -126,7 +126,7 @@ class _ParkingDetailPageState extends State<ParkingDetailPage> {
                   startTime: DateTime.now(),
                 );
                 AppState.instance.bookParking(widget.name);
-                AppState.instance.addBooking(HistoryEntry(
+                await AppState.instance.addBooking(HistoryEntry(
                   name: widget.name,
                   date: formatDateMy(DateTime.now()),
                   duration: '$_hours jam',
@@ -143,8 +143,8 @@ class _ParkingDetailPageState extends State<ParkingDetailPage> {
                           : 'Luar bangunan',
                   plate: _plateController.text.trim().toUpperCase(),
                 ));
-                Navigator.pop(ctx);
-                Navigator.pop(context);
+                if (ctx.mounted) Navigator.pop(ctx);
+                if (mounted) Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
