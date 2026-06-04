@@ -342,8 +342,9 @@ class _TiketPageState extends State<TiketPage> {
   }
 
   Widget _buildTicket(ActiveTicket ticket) {
+    final totalCharge = ticket.totalAmount + _totalExtendedAmount;
     final amountLabel =
-        'RM ${ticket.totalAmount % 1 == 0 ? ticket.totalAmount.toInt() : ticket.totalAmount.toStringAsFixed(2)}';
+        'RM ${totalCharge % 1 == 0 ? totalCharge.toInt() : totalCharge.toStringAsFixed(2)}';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
