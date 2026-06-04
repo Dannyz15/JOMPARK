@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:jompark/app_state.dart';
 import 'package:jompark/coloumn.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppState.instance.init();
   runApp(const JomParkApp());
 }
 
