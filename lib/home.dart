@@ -18,11 +18,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     AppState.instance.parkingList.addListener(_onParkingChanged);
+    AppState.instance.activeTicket.addListener(_onParkingChanged);
   }
 
   @override
   void dispose() {
     AppState.instance.parkingList.removeListener(_onParkingChanged);
+    AppState.instance.activeTicket.removeListener(_onParkingChanged);
     _searchController.dispose();
     super.dispose();
   }
@@ -117,6 +119,38 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _navigateTo(Map<String, dynamic> parking) {
+    final activeTicket = AppState.instance.activeTicket.value;
+    if (activeTicket != null) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: const Color(0xFF141B2D),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Row(
+            children: [
+              Icon(Icons.info_outline, color: Color(0xFFFBBF24), size: 22),
+              SizedBox(width: 8),
+              Text('Tiket Aktif', style: TextStyle(color: Colors.white, fontSize: 17)),
+            ],
+          ),
+          content: Text(
+            'Anda masih mempunyai tiket aktif di ${activeTicket.name}.\nSila keluar dahulu sebelum membuat tempahan baru.',
+            style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('OK', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -420,8 +454,10 @@ class _HomePageState extends State<HomePage> {
             )
           else
             ...filtered
-                .map(
-                  (p) => GestureDetector(
+                .map((p) {
+                  final activeTicket = AppState.instance.activeTicket.value;
+                  final isMyParking = activeTicket?.name == p['name'];
+                  return GestureDetector(
                     onTap: () => _navigateTo(p),
                     child: _ParkingCard(
                       icon: p['icon'] as IconData,
@@ -432,13 +468,16 @@ class _HomePageState extends State<HomePage> {
                       level: p['level'] as String,
                       price: _priceLabel(p),
                       priceColor: p['priceColor'] as Color,
-                      slotLabel: (p['availableSlots'] as int) > 0
-                          ? '${p['availableSlots']} slot'
-                          : 'Penuh',
-                      isAvailable: (p['availableSlots'] as int) > 0,
+                      slotLabel: isMyParking
+                          ? 'Aktif'
+                          : (p['availableSlots'] as int) > 0
+                              ? '${p['availableSlots']} slot'
+                              : 'Penuh',
+                      isAvailable: !isMyParking && (p['availableSlots'] as int) > 0,
+                      isMyParking: isMyParking,
                     ),
-                  ),
-                ),
+                  );
+                }),
 
           const SizedBox(height: 16),
         ],
@@ -602,6 +641,7 @@ class _ParkingCard extends StatelessWidget {
   final Color priceColor;
   final String slotLabel;
   final bool isAvailable;
+  final bool isMyParking;
 
   const _ParkingCard({
     required this.icon,
@@ -614,6 +654,7 @@ class _ParkingCard extends StatelessWidget {
     required this.priceColor,
     required this.slotLabel,
     required this.isAvailable,
+    this.isMyParking = false,
   });
 
   @override
@@ -675,28 +716,36 @@ class _ParkingCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: isAvailable
-                      ? const Color(0xFF14532D)
-                      : const Color(0xFF450A0A),
+                  color: isMyParking
+                      ? const Color(0xFF1E3A5F)
+                      : isAvailable
+                          ? const Color(0xFF14532D)
+                          : const Color(0xFF450A0A),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isAvailable ? Icons.access_time : Icons.close,
-                      color: isAvailable
-                          ? const Color(0xFF4ADE80)
-                          : const Color(0xFFF87171),
+                      isMyParking
+                          ? Icons.directions_car
+                          : isAvailable ? Icons.access_time : Icons.close,
+                      color: isMyParking
+                          ? const Color(0xFF60A5FA)
+                          : isAvailable
+                              ? const Color(0xFF4ADE80)
+                              : const Color(0xFFF87171),
                       size: 12,
                     ),
                     const SizedBox(width: 3),
                     Text(
                       slotLabel,
                       style: TextStyle(
-                        color: isAvailable
-                            ? const Color(0xFF4ADE80)
-                            : const Color(0xFFF87171),
+                        color: isMyParking
+                            ? const Color(0xFF60A5FA)
+                            : isAvailable
+                                ? const Color(0xFF4ADE80)
+                                : const Color(0xFFF87171),
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
