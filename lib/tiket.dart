@@ -95,7 +95,7 @@ class _TiketPageState extends State<TiketPage> {
             child: const Text('Batal', style: TextStyle(color: Color(0xFF9CA3AF))),
           ),
           ElevatedButton(
-            onPressed: () async {
+            onPressed: () {
               Navigator.pop(ctx);
               Navigator.pop(context);
               setState(() {
@@ -113,7 +113,7 @@ class _TiketPageState extends State<TiketPage> {
                     : h > 0
                         ? '$h jam'
                         : '$m minit';
-                await AppState.instance.updateLastBookingDuration(durStr);
+                AppState.instance.updateLastBookingDuration(durStr);
               }
             },
             style: ElevatedButton.styleFrom(

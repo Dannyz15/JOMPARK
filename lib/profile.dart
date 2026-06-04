@@ -174,20 +174,18 @@ class _ProfilePageState extends State<ProfilePage> {
             child: const Text('Batal', style: TextStyle(color: Color(0xFF9CA3AF))),
           ),
           ElevatedButton(
-            onPressed: () async {
-              final updated = {
+            onPressed: () {
+              final list = [...AppState.instance.vehicles.value];
+              list[index] = {
                 'plate': plateCtrl.text.trim().toUpperCase(),
                 'model': modelCtrl.text.trim(),
                 'color': colorCtrl.text.trim(),
               };
+              setState(() => AppState.instance.vehicles.value = list);
               Navigator.pop(ctx);
-              await AppState.instance.updateVehicle(index, updated);
-              if (mounted) {
-                setState(() {});
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kenderaan dikemaskini'), backgroundColor: Color(0xFF059669)),
-                );
-              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Kenderaan dikemaskini'), backgroundColor: Color(0xFF059669)),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
@@ -217,19 +215,16 @@ class _ProfilePageState extends State<ProfilePage> {
             child: const Text('Batal', style: TextStyle(color: Color(0xFF9CA3AF))),
           ),
           ElevatedButton(
-            onPressed: () async {
+            onPressed: () {
+              final list = [...AppState.instance.vehicles.value]..removeAt(index);
+              setState(() {
+                AppState.instance.vehicles.value = list;
+                if (_mainVehicleIndex >= list.length) _mainVehicleIndex = 0;
+              });
               Navigator.pop(ctx);
-              await AppState.instance.removeVehicle(index);
-              if (mounted) {
-                setState(() {
-                  if (_mainVehicleIndex >= AppState.instance.vehicles.value.length) {
-                    _mainVehicleIndex = 0;
-                  }
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kenderaan dipadam'), backgroundColor: Color(0xFFDC2626)),
-                );
-              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Kenderaan dipadam'), backgroundColor: Color(0xFFDC2626)),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFDC2626),
@@ -282,23 +277,23 @@ class _ProfilePageState extends State<ProfilePage> {
             child: const Text('Batal', style: TextStyle(color: Color(0xFF9CA3AF))),
           ),
           ElevatedButton(
-            onPressed: () async {
+            onPressed: () {
               if (plateCtrl.text.trim().isNotEmpty) {
-                Navigator.pop(ctx);
-                await AppState.instance.addVehicle({
-                  'plate': plateCtrl.text.trim().toUpperCase(),
-                  'model': modelCtrl.text.trim(),
-                  'color': colorCtrl.text.trim(),
+                setState(() {
+                  AppState.instance.vehicles.value = [
+                    ...AppState.instance.vehicles.value,
+                    {
+                      'plate': plateCtrl.text.trim().toUpperCase(),
+                      'model': modelCtrl.text.trim(),
+                      'color': colorCtrl.text.trim(),
+                    },
+                  ];
                 });
-                if (mounted) {
-                  setState(() {});
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Kenderaan ditambah'), backgroundColor: Color(0xFF059669)),
-                  );
-                }
-              } else {
-                Navigator.pop(ctx);
               }
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Kenderaan ditambah'), backgroundColor: Color(0xFF059669)),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
