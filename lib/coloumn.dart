@@ -3,6 +3,7 @@ import 'package:jompark/home.dart';
 import 'package:jompark/tiket.dart';
 import 'package:jompark/sejarah.dart';
 import 'package:jompark/profile.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 
 class ColumnPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class ColumnPage extends StatefulWidget {
 
 class _ColumnPageState extends State<ColumnPage> {
   int _currentIndex = 0;
+  String _appVersion = '';
 
   final List<Widget> _pages = const [
     HomePage(),
@@ -21,6 +23,14 @@ class _ColumnPageState extends State<ColumnPage> {
     SejarahPage(),
     ProfilePage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    PackageInfo.fromPlatform().then((info) {
+      if (mounted) setState(() => _appVersion = 'v${info.version}');
+    });
+  }
 
   void _logout() {
     Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
@@ -56,6 +66,7 @@ class _ColumnPageState extends State<ColumnPage> {
           Navigator.pop(context);
         },
         onLogout: _logout,
+        appVersion: _appVersion,
       ),
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: Container(
@@ -104,11 +115,13 @@ class _AppDrawer extends StatelessWidget {
   final int currentIndex;
   final void Function(int) onNavigate;
   final VoidCallback onLogout;
+  final String appVersion;
 
   const _AppDrawer({
     required this.currentIndex,
     required this.onNavigate,
     required this.onLogout,
+    required this.appVersion,
   });
 
   static const _items = [
@@ -146,16 +159,16 @@ class _AppDrawer extends StatelessWidget {
                     child: const Icon(Icons.local_parking, color: Colors.white, size: 26),
                   ),
                   const SizedBox(width: 14),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Jom Park',
+                      const Text('Jom Park',
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold)),
-                      Text('v1.0.0',
-                          style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+                      Text(appVersion,
+                          style: const TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
                     ],
                   ),
                 ],
